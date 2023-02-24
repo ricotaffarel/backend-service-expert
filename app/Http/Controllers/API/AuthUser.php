@@ -60,6 +60,8 @@ class AuthUser extends Controller
                 'roles_id' => ['required', 'gte:2', 'lte:4', 'integer']
             ]);
 
+            
+
             // Create user
             if ($request->roles_id == 2) {
                 $user = User::create([

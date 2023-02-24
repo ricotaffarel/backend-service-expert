@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\Admin\AdminController;
+use App\Http\Controllers\API\Mitra\MitraController;
 use App\Http\Controllers\API\AuthUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +20,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+
+
+//Mitra
+Route::post('/addmitra', [MitraController::class, 'create'])->name('create');
+Route::get('/hapusmitra', [MitraController::class, 'destroy'])->name('destroy');
+
+
+Route::post('/update', [AdminController::class, 'update'])->name('update');
+
 
 // Auth API
 Route::name('auth')->group(function () {
