@@ -22,15 +22,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-
-
-
 //Mitra
-Route::post('/addmitra', [MitraController::class, 'create'])->name('create');
-Route::get('/hapusmitra', [MitraController::class, 'destroy'])->name('destroy');
+// Route::post('/addmitra', [MitraController::class, 'create'])->name('create');
+// Route::get('/hapusmitra', [MitraController::class, 'destroy'])->name('destroy');
 
 
-Route::post('/update', [AdminController::class, 'update'])->name('update');
+// Route::post('/update', [AdminController::class, 'update'])->name('update');
 
 
 // Auth API
@@ -41,5 +38,34 @@ Route::name('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthUser::class, 'logout'])->name('logout');
         Route::get('user', [AuthUser::class, 'fetch'])->name('fetch');
+    }
+    );
+});
+
+//Admin
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix' => 'admin'], function () {
+        Route::post('/update-profile', [AdminController::class, 'update'])->name('update');
+    });
+});
+
+//Mitra
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix' => 'mitra'], function () {
+        Route::post('/update', [AdminController::class, 'update'])->name('update');
+    });
+});
+
+//Pegawai
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix' => 'pegawai'], function () {
+        Route::post('/update', [AdminController::class, 'updates'])->name('updates');
+    });
+});
+
+//customer
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix' => 'customer'], function () {
+        Route::post('/update', [AdminController::class, 'update'])->name('update');
     });
 });
