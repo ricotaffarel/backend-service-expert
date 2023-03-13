@@ -77,6 +77,25 @@ class MitraController extends Controller
         }
     }
 
+    public function view()
+{
+    try {
+
+        $data = User::where('roles_id', 2)->get();
+
+        return ResponseFormatter::success([
+            // 'access_token' => $toketResult,
+            // 'token_type' => 'Bearer',
+            'data' => $data
+        ], 'Delete success');
+
+    } catch (Exception $error) {
+        // Return error response
+
+        return ResponseFormatter::error($error->getMessage());
+    }
+}
+
 
 
 

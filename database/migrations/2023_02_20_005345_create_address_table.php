@@ -21,8 +21,8 @@ class CreateAddressTable extends Migration
             $table->char('villages_code', 10);
             $table->char('title');
             $table->char('detail_address');
-            $table->char('lat');
-            $table->char('long');
+            $table->char('lat')->nullable();
+            $table->char('long')->nullable();
             $table->timestamps();
 
             $table->foreign('province_code')
