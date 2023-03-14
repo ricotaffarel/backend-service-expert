@@ -16,105 +16,103 @@ use function PHPUnit\Framework\isEmpty;
 
 class AlamatController extends Controller
 {
-    public function indexcities() {
-        try {
-
-        $data = cities::all();
-
-        return ResponseFormatter::success([
-            // 'access_token' => $toketResult,
-            // 'token_type' => 'Bearer',
-            'data' => $data
-        ], 'Get data success');
-
-    } catch (Exception $error) {
-        // Return error response
-
-        return ResponseFormatter::error($error->getMessage());
-    }
-}
-
-
-
-public function indexprovinces() {
-    try {
-
-        $data = provinces::all();
-
-        return ResponseFormatter::success([
-            // 'access_token' => $toketResult,
-            // 'token_type' => 'Bearer',
-            'data' => $data
-        ], 'Get data success');
-
-    } catch (Exception $error) {
-        // Return error response
-
-        return ResponseFormatter::error($error->getMessage());
-    }
-
-}
-
-public function indexvillages() {
-    try {
-
-        $data = villages::all();
-
-        return ResponseFormatter::success([
-            // 'access_token' => $toketResult,
-            // 'token_type' => 'Bearer',
-            'data' => $data
-        ], 'Get data success');
-
-    } catch (Exception $error) {
-        // Return error response
-
-        return ResponseFormatter::error($error->getMessage());
-    }
-
-}
-
-public function indexdistricts() {
-    try {
-
-        $data = districts::all();
-
-        return ResponseFormatter::success([
-            // 'access_token' => $toketResult,
-            // 'token_type' => 'Bearer',
-            'data' => $data
-        ], 'Get data success');
-
-    } catch (Exception $error) {
-        // Return error response
-
-        return ResponseFormatter::error($error->getMessage());
-    }
-}
-
-public function indexaddress() {
-    try {
-
-    $data = address::all();
-
-    return ResponseFormatter::success([
-        // 'access_token' => $toketResult,
-        // 'token_type' => 'Bearer',
-        'data' => $data
-    ], 'Get data success');
-
-} catch (Exception $error) {
-    // Return error response
-
-    return ResponseFormatter::error($error->getMessage());
-}
-}
-
-
-public function createaddress(Request $request)
+    public function indexcities()
     {
         try {
-            // Validate request
+
+            $data = cities::all();
+
+            return ResponseFormatter::success([
+                'data' => $data
+            ], 'Get data success');
+
+        } catch (Exception $error) {
+            // Return error response
+
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+
+
+    public function indexprovinces()
+    {
+        try {
+
+            $data = provinces::all();
+
+            return ResponseFormatter::success([
+                'data' => $data
+            ], 'Get data success');
+
+        } catch (Exception $error) {
+            // Return error response
+            return ResponseFormatter::error($error->getMessage());
+        }
+
+    }
+
+    public function indexvillages()
+    {
+        try {
+
+            $data = villages::all();
+
+            return ResponseFormatter::success([
+                'data' => $data
+            ], 'Get data success');
+
+        } catch (Exception $error) {
+            // Return error response
+
+            return ResponseFormatter::error($error->getMessage());
+        }
+
+    }
+
+    public function indexdistricts()
+    {
+        try {
+
+            $data = districts::all();
+
+            return ResponseFormatter::success([
+                'data' => $data
+            ], 'Get data success');
+
+        } catch (Exception $error) {
+            // Return error response
+
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+    public function indexaddress(Request $request)
+    {
+        try {
+            $auth = $request->user();
+            $data = address::find($auth->id);
+            if (!$data) {
+                return ResponseFormatter::error('Address not found');
+            } else {
+                $data = address::all();
+
+                return ResponseFormatter::success([
+                    'data' => $data
+                ], 'Get data success');
+
+            }
+
+        } catch (Exception $error) {
+            // Return error response
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+
+    public function createaddress(Request $request)
+    {
+        try {
             $request->validate([
                 'province_code' => ['required', 'string', 'max:255'],
                 'city_code' => ['required', 'string', 'max:255'],
@@ -125,30 +123,23 @@ public function createaddress(Request $request)
             ]);
 
             // Create user
+            $user = address::create([
+                // 'code' => $request->code,
+                'province_code' => $request->province_code,
+                'city_code' => $request->city_code,
+                'district_code' => $request->district_code,
+                'villages_code' => $request->villages_code,
+                'title' => $request->title,
+                'detail_address' => $request->detail_address
+            ]);
 
-                $user = address::create([
-                    // 'code' => $request->code,
-                    'province_code' => $request->province_code,
-                    'city_code' => $request->city_code,
-                    'district_code' => $request->district_code,
-                    'villages_code' => $request->villages_code,
-                    'title' => $request->title,
-                    'detail_address' => $request->detail_address
-                ]);
-
-            // Generate token
-            // $toketResult = $user->createToken('authToken')->plainTextToken;
-
-            // Return response
             return ResponseFormatter::success([
-                // 'access_token' => $toketResult,
-                // 'token_type' => 'Bearer',
+
                 'user' => $user
             ], 'Register success');
 
         } catch (Exception $error) {
             // Return error response
-
             return ResponseFormatter::error($error->getMessage());
         }
     }
@@ -156,21 +147,34 @@ public function createaddress(Request $request)
 
     public function update(Request $request)
     {
+        $auth = $request->user();
+        if (!$auth) {
+            address::where('id', $request->id)->update(
+                [
+                    'province_code' => $request->province_code,
+                    'city_code' => $request->city_code,
+                    'district_code' => $request->district_code,
+                    'villages_code' => $request->villages_code,
+                    'title' => $request->title,
+                    'detail_address' => $request->detail_address
+                ]
+            );
+            $address = address::where('id', $request->id)->first();
+        } else {
+            address::where('id', $auth->id)->update(
+                [
+                    'province_code' => $request->province_code,
+                    'city_code' => $request->city_code,
+                    'district_code' => $request->district_code,
+                    'villages_code' => $request->villages_code,
+                    'title' => $request->title,
+                    'detail_address' => $request->detail_address
+                ]
+            );
+            $address = address::where('id', $auth->id)->first();
+        }
+        return ResponseFormatter::success([
 
-        address::where('id' , $request->id)->update(
-            [
-                'province_code' => $request->province_code,
-                'city_code' => $request->city_code,
-                'district_code' => $request->district_code,
-                'villages_code' => $request->villages_code,
-                'title' => $request->title,
-                'detail_address' => $request->detail_address
-        ]
-        );
-        $address = address::where('id', $request->id)->first();
-    return ResponseFormatter::success([
-            // 'access_token' => $toketResult,
-            // 'token_type' => 'Bearer',
             'data' => $address
         ], 'Update success');
     }
@@ -178,42 +182,23 @@ public function createaddress(Request $request)
     public function destroy(Request $request)
     {
         try {
-            // Validate request
-            //delete image
 
-           $add =  address::where("id", $request->id);
-           $arr =$request->id;
-        if ($add) {
-            return ResponseFormatter::error([
-            'message' => "id tidak ditemukan"
-            ], 'Delete failed');
-        }
+            $address = address::find($request->id);
 
-        else {
+            if (!$address) {
+                return ResponseFormatter::error([
+                    'message' => "id tidak ditemukan"
+                ], 'Delete failed');
+            } else {
+                $address->delete();
 
-        }
-
-           $add->delete();
-
-
-
-        //delete post
-
-            // Generate token
-            // $toketResult = $user->createToken('authToken')->plainTextToken;
-
-            // Return response
-            return ResponseFormatter::success([
-                // 'access_token' => $toketResult,
-                // 'token_type' => 'Bearer',
-                'user' => $add
-            ], 'Delete success');
+                return ResponseFormatter::success('Delete success');
+            }
 
         } catch (Exception $error) {
             // Return error response
-
             return ResponseFormatter::error($error->getMessage());
         }
     }
 
-    }
+}

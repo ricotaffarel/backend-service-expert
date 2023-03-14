@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AuthUser extends Controller
 {
@@ -60,9 +61,6 @@ class AuthUser extends Controller
                 'roles_id' => ['required', 'gte:2', 'lte:4', 'integer']
             ]);
 
-            
-
-            // Create user
             if ($request->roles_id == 2) {
                 $user = User::create([
                     'name' => $request->name,
@@ -70,7 +68,7 @@ class AuthUser extends Controller
                     'password' => Hash::make($request->password),
                     'gender' => $request->gender,
                     'roles_id' => $request->roles_id,
-                    'status_user' => 'Tidak Aktif'
+                    'status_user' => 'Pending'
                 ]);
             } else if ($request->roles_id == 4) {
                 $user = User::create([
@@ -82,17 +80,9 @@ class AuthUser extends Controller
                     'status_user' => 'Aktif'
                 ]);
             } else {
-
+                return ResponseFormatter::error('Register failed');
             }
-
-
-            // Generate token
-            // $toketResult = $user->createToken('authToken')->plainTextToken;
-
-            // Return response
             return ResponseFormatter::success([
-                // 'access_token' => $toketResult,
-                // 'token_type' => 'Bearer',
                 'user' => $user
             ], 'Register success');
 
@@ -118,5 +108,39 @@ class AuthUser extends Controller
 
         // Return response
         return ResponseFormatter::success($user, 'Fetch success');
+    }
+
+
+    public function update(Request $request)
+    {
+        //define validation rules
+        $auth = $request->user();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $params['photo'] = $image->store('public/image');
+            $user = User::where('id', $auth->id)->first();
+            Storage::delete('public/image/' . $user->image);
+            //print($image->store('public/image'));
+            $params = [
+                'photo' => $image->store('public/image'),
+            ];
+
+            User::where('id', $user->id)->update(
+                [
+                    'photo' => $image->store('public/image'),
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'gender' => $request->gender,
+                ]
+            );
+
+        }
+
+        return ResponseFormatter::success([
+            'user' => $user
+        ], 'Update success');
+
     }
 }

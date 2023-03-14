@@ -16,6 +16,8 @@ class CreateAddressTable extends Migration
         Schema::create('address', function (Blueprint $table) {
             $table->id();
             $table->char('province_code', 2);
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->char('city_code', 4);
             $table->char('district_code', 7);
             $table->char('villages_code', 10);
