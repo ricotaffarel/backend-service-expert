@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Pegawai;
 use App\Models\roles;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -28,11 +29,6 @@ class DatabaseSeeder extends Seeder
 
         Roles::create([
             "id" => 3,
-            "name" => "PEGAWAI"
-        ]);
-
-        Roles::create([
-            "id" => 4,
             "name" => "CUSTOMER"
         ]);
 
@@ -56,24 +52,23 @@ class DatabaseSeeder extends Seeder
             "roles_id" => 2,
         ]);
 
-        User::create([
-            "id" => 3,
+        Pegawai::create([
+            "id" => 1,
             "name" => "Bril",
             "email" => "Bril@gmail.com",
             "password" => Hash::make("pegawai"),
             "gender" => "Pria",
             "status_user" => "Aktif",
-            "roles_id" => 3,
         ]);
 
         User::create([
-            "id" => 4,
+            "id" => 3,
             "name" => "customer1",
             "email" => "customer1@gmail.com",
             "password" => Hash::make("customer"),
             "gender" => "Pria",
             "status_user" => "Aktif",
-            "roles_id" => 4,
+            "roles_id" => 3,
         ]);
     }
 }
