@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Auth API
 Route::name('auth')->group(function () {
     Route::post('login', [AuthUser::class, 'login'])->name('login');
+    Route::post('loginpegawai', [AuthUser::class, 'loginpegawai'])->name('loginpegawai');
     Route::post('register', [AuthUser::class, 'register'])->name('register');
 
     Route::middleware('auth:sanctum')->group(
@@ -42,6 +43,7 @@ Route::name('auth')->group(function () {
             Route::post('updateaddress', [AlamatController::class, 'update'])->name('update');
             Route::post('deleteaddress', [AlamatController::class, 'destroy'])->name('destroy');
             Route::get('address', [AlamatController::class, 'indexaddress'])->name('indexaddress');
+            Route::get('alladdress', [AlamatController::class, 'alladdress'])->name('alladdress');
         }
     );
 });
@@ -52,7 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ['prefix' => 'admin'],
         function () {
             Route::post('/update-profile', [AuthUser::class, 'update'])->name('update');
-           
+
             // CRUD USER
             Route::post('/create-user', [UserController::class, 'create'])->name('create');
             Route::post('/update-user', [UserController::class, 'update'])->name('update');
@@ -70,12 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/update-profile', [AuthUser::class, 'update'])->name('update');
 
             //CRUD PEGAWAI
-             // CRUD USER
-             Route::post('/create-pegawai', [UserControllerMitra::class, 'create'])->name('create');
-             Route::post('/update-pegawai', [UserControllerMitra::class, 'update'])->name('update');
-             Route::post('/delete-pegawai', [UserControllerMitra::class, 'destroy'])->name('destroy');
-             Route::get('/view-pegawai', [UserControllerMitra::class, 'view'])->name('view');
-
+            // CRUD USER
+            Route::post('/create-pegawai', [UserControllerMitra::class, 'create'])->name('create');
+            Route::post('/update-pegawai', [UserControllerMitra::class, 'update'])->name('update');
+            Route::post('/delete-pegawai', [UserControllerMitra::class, 'destroy'])->name('destroy');
+            Route::get('/view-pegawai', [UserControllerMitra::class, 'view'])->name('view');
         }
     );
 });

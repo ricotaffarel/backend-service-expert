@@ -15,11 +15,11 @@ class address extends Model
 
     protected $fillable = [
         'province_code',
+        'user_id',
         'city_code',
         'district_code',
         'villages_code',
         'title',
         'detail_address',
     ];
-
 }

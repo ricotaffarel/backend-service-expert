@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Pegawai;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,6 +32,41 @@ class AuthUser extends Controller
             }
 
             $user = User::where('email', $request->email)->first();
+            if (!Hash::check($request->password, $user->password)) {
+                throw new Exception('Invalid password');
+            }
+
+            // Generate token
+            $toketResult = $user->createToken('authToken')->plainTextToken;
+
+            // Return response
+            return ResponseFormatter::success([
+                'access_token' => $toketResult,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ], 'Login success');
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Authentication Failed');
+        }
+    }
+
+    public function loginpegawai(Request $request)
+    {
+        try {
+            // Validate request
+
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            // // Find user by email
+            // $credentials = request(['email', 'password']);
+            // if (!Auth::attempt($credentials)) {
+            //     return ResponseFormatter::error('Unauthorized', 401);
+            // }
+
+            $user = Pegawai::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password)) {
                 throw new Exception('Invalid password');
             }
@@ -85,7 +121,6 @@ class AuthUser extends Controller
             return ResponseFormatter::success([
                 'user' => $user
             ], 'Register success');
-
         } catch (Exception $error) {
             // Return error response
             return ResponseFormatter::error($error->getMessage());
@@ -135,12 +170,10 @@ class AuthUser extends Controller
                     'gender' => $request->gender,
                 ]
             );
-
         }
 
         return ResponseFormatter::success([
             'user' => $user
         ], 'Update success');
-
     }
 }

@@ -25,7 +25,6 @@ class AlamatController extends Controller
             return ResponseFormatter::success([
                 'data' => $data
             ], 'Get data success');
-
         } catch (Exception $error) {
             // Return error response
 
@@ -44,12 +43,10 @@ class AlamatController extends Controller
             return ResponseFormatter::success([
                 'data' => $data
             ], 'Get data success');
-
         } catch (Exception $error) {
             // Return error response
             return ResponseFormatter::error($error->getMessage());
         }
-
     }
 
     public function indexvillages()
@@ -61,13 +58,11 @@ class AlamatController extends Controller
             return ResponseFormatter::success([
                 'data' => $data
             ], 'Get data success');
-
         } catch (Exception $error) {
             // Return error response
 
             return ResponseFormatter::error($error->getMessage());
         }
-
     }
 
     public function indexdistricts()
@@ -79,7 +74,22 @@ class AlamatController extends Controller
             return ResponseFormatter::success([
                 'data' => $data
             ], 'Get data success');
+        } catch (Exception $error) {
+            // Return error response
 
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+    public function alladdress()
+    {
+        try {
+
+            $data = address::all();
+
+            return ResponseFormatter::success([
+                'data' => $data
+            ], 'Get data success');
         } catch (Exception $error) {
             // Return error response
 
@@ -91,7 +101,7 @@ class AlamatController extends Controller
     {
         try {
             $auth = $request->user();
-            $data = address::find($auth->id);
+            $data = address::where('user_id', $auth->id);
             if (!$data) {
                 return ResponseFormatter::error('Address not found');
             } else {
@@ -100,9 +110,7 @@ class AlamatController extends Controller
                 return ResponseFormatter::success([
                     'data' => $data
                 ], 'Get data success');
-
             }
-
         } catch (Exception $error) {
             // Return error response
             return ResponseFormatter::error($error->getMessage());
@@ -113,6 +121,8 @@ class AlamatController extends Controller
     public function createaddress(Request $request)
     {
         try {
+            $auth = $request->user();
+
             $request->validate([
                 'province_code' => ['required', 'string', 'max:255'],
                 'city_code' => ['required', 'string', 'max:255'],
@@ -126,6 +136,7 @@ class AlamatController extends Controller
             $user = address::create([
                 // 'code' => $request->code,
                 'province_code' => $request->province_code,
+                'user_id' => $auth->id,
                 'city_code' => $request->city_code,
                 'district_code' => $request->district_code,
                 'villages_code' => $request->villages_code,
@@ -137,7 +148,6 @@ class AlamatController extends Controller
 
                 'user' => $user
             ], 'Register success');
-
         } catch (Exception $error) {
             // Return error response
             return ResponseFormatter::error($error->getMessage());
@@ -149,8 +159,9 @@ class AlamatController extends Controller
     {
         $auth = $request->user();
         if (!$auth) {
-            address::where('id', $request->id)->update(
+            address::where('id', $auth)->update(
                 [
+                    'user_id' => $auth->id,
                     'province_code' => $request->province_code,
                     'city_code' => $request->city_code,
                     'district_code' => $request->district_code,
@@ -159,23 +170,24 @@ class AlamatController extends Controller
                     'detail_address' => $request->detail_address
                 ]
             );
-            $address = address::where('id', $request->id)->first();
+            $address = address::where('id', $auth)->first();
         } else {
-            address::where('id', $auth->id)->update(
-                [
-                    'province_code' => $request->province_code,
-                    'city_code' => $request->city_code,
-                    'district_code' => $request->district_code,
-                    'villages_code' => $request->villages_code,
-                    'title' => $request->title,
-                    'detail_address' => $request->detail_address
-                ]
-            );
-            $address = address::where('id', $auth->id)->first();
+            // address::where('id', $auth->id)->update(
+            //     [
+            //         'province_code' => $request->province_code,
+            //         'city_code' => $request->city_code,
+            //         'district_code' => $request->district_code,
+            //         'villages_code' => $request->villages_code,
+            //         'title' => $request->title,
+            //         'detail_address' => $request->detail_address
+            //     ]
+            // );
+            // $address = address::where('id', $auth->id)->first();
+
         }
         return ResponseFormatter::success([
 
-            'data' => $address
+            // 'data' => $address
         ], 'Update success');
     }
 
@@ -194,11 +206,9 @@ class AlamatController extends Controller
 
                 return ResponseFormatter::success('Delete success');
             }
-
         } catch (Exception $error) {
             // Return error response
             return ResponseFormatter::error($error->getMessage());
         }
     }
-
 }
